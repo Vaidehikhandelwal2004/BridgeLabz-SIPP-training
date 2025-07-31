@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class Sorting_Performance 
+public class SortingPerformance 
 {
    
     public static void bubbleSort(int[] arr) 

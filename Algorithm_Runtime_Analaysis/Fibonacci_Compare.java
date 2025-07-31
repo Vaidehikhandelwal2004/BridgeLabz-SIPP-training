@@ -1,8 +1,8 @@
 import java.util.*;
 
-// ===== CLASS: Fibonacci=====
+// ===== CLASS: Fibonacci_Compare=====
 
-public class Fibonacci
+public class Fibonacci_Compare
 {
     // Recursive method (O(2^N))
     public static int fibRec(int n) 
