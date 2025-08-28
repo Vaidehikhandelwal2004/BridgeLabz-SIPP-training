@@ -1,0 +1,234 @@
+CLASS Transaction
+    PROPERTIES:
+        id
+        merchant
+        amount
+        date   // LocalDate
+
+    CONSTRUCTOR(id, merchant, amount, date)
+        SET this.id = id
+        SET this.merchant = merchant
+        SET this.amount = amount
+        SET this.date = date
+
+
+
+PROGRAM TransactionSummaryReport
+
+    transactions = [
+        Transaction(1, "Amazon", 1200, 2025-01-10),
+        Transaction(2, "Flipkart", 800, 2025-01-15),
+        Transaction(3, "Amazon", 500, 2025-02-05),
+        Transaction(4, "Myntra", 1500, 2025-01-20),
+        Transaction(5, "Flipkart", 2000, 2025-02-12),
+        Transaction(6, "Amazon", 1000, 2025-02-25)
+    ]
+
+
+       summary = transactions.stream()
+        .collect(
+            groupingBy(
+                t -> t.merchant,
+                groupingBy(
+                    t -> t.date.getMonth(),
+                    summingDouble(t -> t.amount)
+                )
+            )
+        )
+
+    
+    FOR each merchant IN summary
+        PRINT "Merchant:", merchant
+        FOR each month IN summary[merchant]
+            PRINT "   Month:", month, 
+                  " Total Amount:", summary[merchant][month]
+
+-------------------------------------------------------------------------------------------------------------
+
+
+CLASS Student
+    PROPERTIES:
+        id
+        name
+
+    CONSTRUCTOR(id, name)
+        SET this.id = id
+        SET this.name = name
+
+    METHOD display()
+        PRINT "Student ID:", id, " Name:", name
+
+
+CLASS Course
+    PROPERTIES:
+        code
+        title
+
+    CONSTRUCTOR(code, title)
+        SET this.code = code
+        SET this.title = title
+
+    METHOD display()
+        PRINT "Course:", code, "-", title
+
+
+
+CLASS CourseRegistry
+    PROPERTY courseMap   
+   List<Student>>
+
+    CONSTRUCTOR()
+        INITIALIZE courseMap as empty map
+
+    METHOD addStudentToCourse(course, student)
+        IF course NOT in courseMap
+            courseMap[course] = new empty list
+        ADD student to courseMap[course]
+
+    METHOD displayStudentsPerCourse()
+        FOR each (course, studentList) in courseMap
+            course.display()
+            PRINT "Enrolled Students:"
+            FOR each student IN studentList
+                student.display()
+            PRINT 
+
+
+----------------------------------------------------------------------------------------------------------------
+
+
+
+CLASS Account
+    PROPERTIES:
+        accountNumber
+        accountHolderName
+        balance
+
+    CONSTRUCTOR(accountNumber, accountHolderName, balance)
+        SET this.accountNumber = accountNumber
+        SET this.accountHolderName = accountHolderName
+        SET this.balance = balance
+
+    METHOD deposit(amount)
+        balance = balance + amount
+        PRINT "Deposited:", amount, " New Balance:", balance
+
+    METHOD withdraw(amount)   // General Rule (to be overridden)
+        IF amount <= balance
+            balance = balance - amount
+            PRINT "Withdrawn:", amount, " New Balance:", balance
+        ELSE
+            PRINT "Insufficient Balance"
+
+    METHOD displayDetails()
+        PRINT "Account No:", accountNumber
+        PRINT "Holder:", accountHolderName
+        PRINT "Balance:", balance
+
+
+CLASS SavingAccount EXTENDS Account
+    PROPERTY interestRate
+
+    CONSTRUCTOR(accountNumber, accountHolderName, balance, interestRate)
+        CALL super(accountNumber, accountHolderName, balance)
+        SET this.interestRate = interestRate
+
+    OVERRIDE METHOD withdraw(amount)
+        MINIMUM_BALANCE = 1000
+        IF (balance - amount) >= MINIMUM_BALANCE
+            balance = balance - amount
+            PRINT "Withdrawn from Saving:", amount, " Remaining Balance:", balance
+        ELSE
+            PRINT "Withdrawal Denied! Minimum balance of", MINIMUM_BALANCE, "must be maintained."
+
+
+CLASS CurrentAccount EXTENDS Account
+    PROPERTY overdraftLimit
+
+    CONSTRUCTOR(accountNumber, accountHolderName, balance, overdraftLimit)
+        CALL super(accountNumber, accountHolderName, balance)
+        SET this.overdraftLimit = overdraftLimit
+
+    OVERRIDE METHOD withdraw(amount)
+        IF amount <= (balance + overdraftLimit)
+            balance = balance - amount
+            PRINT "Withdrawn from Current:", amount, " Remaining Balance:", balance
+        ELSE
+            PRINT "Withdrawal Denied! Exceeds overdraft limit."
+
+----------------------------------------------------------------------------------------------------------------
+
+CLASS Flight
+    PROPERTIES:
+        flightNumber
+        airline
+        price
+        duration   // in minutes
+
+    CONSTRUCTOR(flightNumber, airline, price, duration)
+        SET this.flightNumber = flightNumber
+        SET this.airline = airline
+        SET this.price = price
+        SET this.duration = duration
+
+    METHOD display()
+        PRINT "Flight:", flightNumber, " Airline:", airline, 
+              " Price:", price, " Duration:", duration
+
+
+
+INTERFACE FlightComparator
+    METHOD compare(f1, f2)   // returns -1, 0, 1
+
+
+
+CLASS PriceComparator IMPLEMENTS FlightComparator
+    OVERRIDE METHOD compare(f1, f2)
+        IF f1.price < f2.price RETURN -1
+        ELSE IF f1.price > f2.price RETURN 1
+        ELSE RETURN 0
+
+
+
+
+CLASS DurationComparator IMPLEMENTS FlightComparator
+    OVERRIDE METHOD compare(f1, f2)
+        IF f1.duration < f2.duration RETURN -1
+        ELSE IF f1.duration > f2.duration RETURN 1
+        ELSE RETURN 0
+
+
+
+CLASS FlightSorter
+    METHOD mergeSort(flights[], comparator)
+        IF length of flights <= 1
+            RETURN flights
+
+        mid = length/2
+        left = mergeSort(flights[0..mid-1], comparator)
+        right = mergeSort(flights[mid..end], comparator)
+
+        RETURN merge(left, right, comparator)
+
+    METHOD merge(left[], right[], comparator)
+        result = empty list
+        i = j = 0
+
+        WHILE i < length(left) AND j < length(right)
+            IF comparator.compare(left[i], right[j]) <= 0
+                ADD left[i] to result
+                i++
+            ELSE
+                ADD right[j] to result
+                j++
+
+        WHILE i < length(left)
+            ADD left[i] to result
+            i++
+
+        WHILE j < length(right)
+            ADD right[j] to result
+            j++
+
+        RETURN result
+------------------------------------------------------------------------------------------------------------------
