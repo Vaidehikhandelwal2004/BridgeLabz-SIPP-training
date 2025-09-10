@@ -1,0 +1,40 @@
+ 1. 
+
+CLASS User{
+    ATTRIBUTES:
+    username 
+    password
+ Constructor(username,password)
+  SET this.username=username;
+  SET this.password=password;
+
+    METHOD login()
+        PRINT "Default user login "
+}
+
+CLASS Student EXTENDS User
+    ATTRIBUTES:
+    enrolled
+
+    CONSTRUCTOR(username,password,enrolled)
+     super(username,password)
+     SET this.enrolled=enrolled
+
+    METHOD login()
+        IF enrolled = TRUE
+            PRINT "Student " + username + " logged in. Exams available."
+        ELSE
+            PRINT "Student not enrolled. Access denied."
+
+CLASS Admin EXTENDS User
+     ATTRIBUTES:
+    isAdmin
+
+  CONSTRUCTOR(username,password,isAdmin)
+    super(username,password)
+     SET this.isAdmin=isAdmin
+    METHOD login()
+        IF isAdmin = TRUE
+            PRINT "Admin " + username + " logged in. Manage exams."
+        ELSE
+            PRINT "Not authorized as Admin."
